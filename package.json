@@ -1,0 +1,35 @@
+{
+  "name": "@strandgeek/powerup",
+  "version": "0.0.1",
+  "description": "PowerUP is a javascript library that makes managing a LUKSO Universal Profile easy",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strandgeek/powerup.git"
+  },
+  "keywords": [
+    "lukso",
+    "universalprofile",
+    "up",
+    "erc725",
+    "javascript",
+    "typescript"
+  ],
+  "author": "StrandGeek",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/strandgeek/powerup/issues"
+  },
+  "homepage": "https://github.com/strandgeek/powerup#readme",
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  }
+}
