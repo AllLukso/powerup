@@ -8,8 +8,8 @@ function App() {
   const powerUP = usePowerUP()
   const [profile, setProfile] = useState<Profile>()
   useEffect(() => {
-    powerUP.getProfile('ahb7n').then(setProfile)
-  }, [powerUP])
+    powerUP.getProfile('0x7f2e0d0d5345E87ae7195510A74cC1c21dBF646b').then(setProfile)
+  }, [])
   if (!profile) {
     return null
   }
