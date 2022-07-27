@@ -1,3 +1,13 @@
+import ERC725 from "@erc725/erc725.js";
+import Web3 from "web3"
+
+// Consts
+const IPFS_GATEWAY = 'https://2eff.lukso.dev/ipfs/';
+
+// Parameters for ERC725 Instance
+const erc725schema = require('@erc725/erc725.js/schemas/LSP3UniversalProfileMetadata.json');
+const config = { ipfsGateway: IPFS_GATEWAY };
+
 export interface ProfileOptions {
 
 }
@@ -33,7 +43,14 @@ type ProfileHandle = {
   toString: () => string
 }
 
+export interface ProfileOptions {
+  address: string;
+  web3: Web3;
+}
+
 export class Profile {
+  private web3: Web3
+
   address: string
   name: string
   description: string
@@ -43,16 +60,22 @@ export class Profile {
   profileImage: Image[]
   backgroundImage: Image[]
 
-  constructor(address: string) {
-    this.address = address
+  constructor(opts: ProfileOptions) {
+    this.address = opts.address
+    this.web3 = opts.web3
   }
 
   async load() {
-    // TODO: Fetch profile real data
-    this.name = 'StrandGeek'
-    this.description = 'Hello World'
-    this.tags = ['Blockchain', 'Development', 'Web3', 'Technology']
-    
+    const erc725 = new ERC725(erc725schema, this.address, this.web3.currentProvider, config);
+    const data = await erc725.fetchData('LSP3Profile') as any;
+    const profileData = data.value.LSP3Profile
+    this.name = profileData.name
+    this.description = profileData.description
+    this.links = profileData.links
+    this.backgroundImage = profileData.backgroundImage
+    this.profileImage = profileData.profileImage
+    this.tags = profileData.tags
+
   }
 
   get handle(): ProfileHandle {
