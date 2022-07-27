@@ -27,7 +27,14 @@ interface ImageDigitalAsset {
   tokenId: string
 }
 
+type ProfileHandle = {
+  name: string,
+  tag: string,
+  toString: () => string
+}
+
 export class Profile {
+  address: string
   name: string
   description: string
   links: ProfileLink[]
@@ -36,8 +43,26 @@ export class Profile {
   profileImage: Image[]
   backgroundImage: Image[]
 
-  constructor() {
+  constructor(address: string) {
+    this.address = address
+  }
 
+  async load() {
+    // TODO: Fetch profile real data
+    this.name = 'StrandGeek'
+    this.description = 'Hello World'
+    this.tags = ['Blockchain', 'Development', 'Web3', 'Technology']
+    
+  }
+
+  get handle(): ProfileHandle {
+    const name = this.name
+    const tag = this.address.substring(0, 4).toUpperCase()
+    return {
+      name,
+      tag,
+      toString: () => `${name}#${tag}`,
+    }
   }
 
   async save() {
