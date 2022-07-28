@@ -1,14 +1,17 @@
 import { Profile } from "./profile"
-import Web3 from "web3"
+import { provider } from "web3-core"
+import Web3 from "web3";
 
 export interface PowerUPOptions {
-  web3: Web3
+  provider: provider
 }
 
 export class PowerUP {
-  web3: Web3;
+  web3: Web3
+  provider: provider;
   constructor(opts: PowerUPOptions) {
-    this.web3 = opts.web3;
+    this.provider = opts.provider;
+    this.web3 = new Web3(this.provider)
   }
 
   async getProfile(address: string): Promise<Profile> {

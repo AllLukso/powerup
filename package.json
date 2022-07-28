@@ -31,5 +31,9 @@
   "homepage": "https://github.com/strandgeek/powerup#readme",
   "devDependencies": {
     "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@erc725/erc725.js": "^0.14.4",
+    "web3": "^1.7.4"
   }
 }
