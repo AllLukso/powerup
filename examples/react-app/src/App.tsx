@@ -1,18 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { PencilIcon } from "@heroicons/react/solid";
+import { WagmiConfig, createClient, configureChains, defaultChains } from 'wagmi'
+import { publicProvider } from 'wagmi/providers/public'
 import { ProfileCard } from "./components/ProfileCard";
-import { Profile } from '@strandgeek/powerup'
-import { usePowerUP } from "./hooks/usePowerUP";
+import { useWallet, WalletProvider } from "./providers/wallet";
+
+const { provider } = configureChains(defaultChains, [publicProvider()])
+
+const client = createClient({
+  autoConnect: false,
+  provider,
+})
 
 function App() {
-  const powerUP = usePowerUP()
-  const [profile, setProfile] = useState<Profile>()
-  useEffect(() => {
-    powerUP.getProfile('0x7f2e0d0d5345E87ae7195510A74cC1c21dBF646b').then(setProfile)
-  }, [])
-  if (!profile) {
-    return null
+  const { isConnected, connect, address } = useWallet()
+
+  if (!isConnected) {
+    return (
+      <button className="btn btn-primary" onClick={() => connect()}>
+        Connect
+      </button>
+    )
   }
+
   return (
     <div className="bg-base-200 w-full h-full">
       <div className="flex items-center justify-center w-screen h-screen">
@@ -20,11 +28,19 @@ function App() {
           <div className="flex justify-center mb-8">
             <img src="/logo.png" className="h-12" />
           </div>
-          <ProfileCard profile={profile} />
+          <ProfileCard />
         </div>
       </div>
     </div>
   );
 }
 
-export default App;
+export default function AppContainer() {
+  return (
+    <WagmiConfig client={client}>
+      <WalletProvider>
+        <App />
+      </WalletProvider>
+    </WagmiConfig>
+  )
+}

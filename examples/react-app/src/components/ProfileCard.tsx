@@ -1,18 +1,19 @@
-import React, { FC } from "react";
-import { Profile } from "@strandgeek/powerup";
+import { FC } from "react";
 import { PencilIcon } from "@heroicons/react/solid";
+import { useProfile } from "../hooks/useProfile";
+
 
 const IPFS_GATEWAY = 'https://2eff.lukso.dev/ipfs/';
-
-export interface ProfileCardProps {
-  profile: Profile;
-}
 
 const ipfsUriToGatewayUrl = (uri: string): string => {
   return uri.replace('ipfs://', IPFS_GATEWAY)
 }
 
-export const ProfileCard: FC<ProfileCardProps> = ({ profile }) => {
+export const ProfileCard: FC<{}> = () => {
+  const profile = useProfile()
+  if (!profile) {
+    return null
+  }
   const { handle } = profile
   const backgroundImage = (profile.backgroundImage.at(-1)) as any
   const profileImage = (profile.profileImage.at(-1)) as any
@@ -22,7 +23,7 @@ export const ProfileCard: FC<ProfileCardProps> = ({ profile }) => {
         <img
           className="object-cover w-full h-full"
           src={ipfsUriToGatewayUrl(backgroundImage.url)}
-          alt="Shoes"
+          alt="Profile Cover"
         />
         <figure></figure>
       </div>
@@ -30,13 +31,13 @@ export const ProfileCard: FC<ProfileCardProps> = ({ profile }) => {
         <div className="absolute left-0 top-[-48px] flex items-center justify-center w-full">
           <div className="avatar">
             <div className="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-              <img src={ipfsUriToGatewayUrl(profileImage.url)} />
+              <img src={ipfsUriToGatewayUrl(profileImage.url)} alt="Profile Avatar" />
             </div>
           </div>
         </div>
         <div className="text-center">
           <h2 className="mt-8 text-center font-bold text-lg">
-            @{handle.name}#<span className="opacity-40">#{handle.tag}</span>
+            @{handle.name}<span className="opacity-40">#{handle.tag}</span>
           </h2>
           <p className="mt-4">
             {profile.description}
