@@ -1,5 +1,11 @@
 import ERC725 from "@erc725/erc725.js";
 import Web3 from "web3"
+import { LSPFactory, ProfileDataBeforeUpload } from "@lukso/lsp-factory.js";
+const UniversalProfile = require('@lukso/lsp-smart-contracts/artifacts/UniversalProfile.json');
+const KeyManager = require("@lukso/lsp-smart-contracts/artifacts/LSP6KeyManager.json");
+
+
+
 
 // Consts
 const IPFS_GATEWAY = 'https://2eff.lukso.dev/ipfs/';
@@ -50,6 +56,7 @@ export interface ProfileOptions {
 
 export class Profile {
   private web3: Web3
+  private lspFactory: LSPFactory
 
   address: string
   name: string
@@ -63,6 +70,7 @@ export class Profile {
   constructor(opts: ProfileOptions) {
     this.address = opts.address
     this.web3 = opts.web3
+    this.lspFactory = new LSPFactory(this.web3.currentProvider);
   }
 
   async load() {
@@ -88,7 +96,62 @@ export class Profile {
     }
   }
 
+  async generateUploadData(): Promise<{ LSP3Profile: ProfileDataBeforeUpload }> {
+    return {
+      LSP3Profile: {
+        name: this.name,
+        description: this.description,
+        avatar: [],
+        backgroundImage: [],
+        profileImage: [],
+        links: [],
+        tags: [],
+      }
+    }
+  }
+
   async save() {
-    // TODO: Save the profile metadata
+    const data = await this.generateUploadData()
+    const uploadResult = await this.lspFactory.UniversalProfile.uploadProfileData(data.LSP3Profile);
+    const lsp3ProfileIPFSUrl = uploadResult.url;
+
+    const schema = [
+      {
+        name: "LSP3Profile",
+        key: "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
+        keyType: "Singleton",
+        valueContent: "JSONURL",
+        valueType: "bytes",
+      },
+    ] as any;
+
+    const erc725 = new ERC725(schema, this.address, this.web3.currentProvider, {
+      ipfsGateway: "https://cloudflare-ipfs.com/ipfs/",
+    });
+
+    const encodedData = erc725.encodeData({
+      // @ts-ignore
+      keyName: "LSP3Profile",
+      value: {
+        hashFunction: "keccak256(utf8)",
+        // hash our LSP3 metadata JSON file
+        hash: this.web3.utils.keccak256(JSON.stringify(data)),
+        url: lsp3ProfileIPFSUrl,
+      },
+    });
+
+    const universalProfileContract = new this.web3.eth.Contract(UniversalProfile.abi, this.address);
+    console.log(universalProfileContract.methods)
+    await universalProfileContract.methods
+    ["setData(bytes32,bytes)"](encodedData.keys[0], encodedData.values[0])
+      .send({
+        from: this.address,
+      })
+      .on("receipt", (receipt) => {
+        console.log(receipt)
+      })
+      .once("sending", (payload) => {
+        console.log(payload)
+      })
   }
 }

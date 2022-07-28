@@ -22,7 +22,7 @@ export const ProfileCard: FC<{}> = () => {
       <div className="w-full h-[160px]">
         <img
           className="object-cover w-full h-full"
-          src={ipfsUriToGatewayUrl(backgroundImage.url)}
+          src={ipfsUriToGatewayUrl(backgroundImage?.url || '')}
           alt="Profile Cover"
         />
         <figure></figure>
@@ -31,7 +31,7 @@ export const ProfileCard: FC<{}> = () => {
         <div className="absolute left-0 top-[-48px] flex items-center justify-center w-full">
           <div className="avatar">
             <div className="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-              <img src={ipfsUriToGatewayUrl(profileImage.url)} alt="Profile Avatar" />
+              <img src={ipfsUriToGatewayUrl(profileImage?.url|| '')} alt="Profile Avatar" />
             </div>
           </div>
         </div>
@@ -48,12 +48,6 @@ export const ProfileCard: FC<{}> = () => {
                 #{tag}
               </span>
             ))}
-          </div>
-          <div className="card-actions">
-            <button className="btn btn-primary btn-ghost btn-block mt-8">
-              <PencilIcon className="h-5 w-5 mr-2" />
-              Edit Profile
-            </button>
           </div>
         </div>
       </div>
