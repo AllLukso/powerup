@@ -1,6 +1,7 @@
 import ERC725 from "@erc725/erc725.js";
 import Web3 from "web3"
-import { LSPFactory, ProfileDataBeforeUpload } from "@lukso/lsp-factory.js";
+import { LinkMetdata, LSP3Profile, LSPFactory, ProfileDataBeforeUpload } from "@lukso/lsp-factory.js";
+import { AssetMetadata, ImageMetadata } from "@lukso/lsp-factory.js/build/main/src/lib/interfaces/metadata";
 const UniversalProfile = require('@lukso/lsp-smart-contracts/artifacts/UniversalProfile.json');
 const KeyManager = require("@lukso/lsp-smart-contracts/artifacts/LSP6KeyManager.json");
 
@@ -26,6 +27,9 @@ interface ProfileLink {
 interface ProfileAvatar {
   title: string
   url: string
+  hashFunction: string
+  hash: string
+  fileType: string
 }
 
 type Image = (ImageURL | ImageDigitalAsset)
@@ -41,6 +45,11 @@ interface ImageURL {
 interface ImageDigitalAsset {
   address: string
   tokenId: string
+  width: number
+  height: number
+  hashFunction: string
+  hash: string
+  url: string
 }
 
 type ProfileHandle = {
@@ -54,18 +63,14 @@ export interface ProfileOptions {
   web3: Web3;
 }
 
+export type UpdateProfileData = ProfileDataBeforeUpload
+
 export class Profile {
   private web3: Web3
   private lspFactory: LSPFactory
+  private lsp3Profile: LSP3Profile
 
   address: string
-  name: string
-  description: string
-  links: ProfileLink[]
-  tags: string[]
-  avatar: ProfileAvatar[]
-  profileImage: Image[]
-  backgroundImage: Image[]
 
   constructor(opts: ProfileOptions) {
     this.address = opts.address
@@ -73,16 +78,46 @@ export class Profile {
     this.lspFactory = new LSPFactory(this.web3.currentProvider);
   }
 
+  get name(): string {
+    return this.lsp3Profile.name
+  }
+
+  get description(): string {
+    return this.lsp3Profile.description
+  }
+
+  get links(): LinkMetdata[] {
+    return this.lsp3Profile.links
+  }
+
+  get tags(): string[] {
+    return this.lsp3Profile.tags
+  }
+
+  get avatar(): AssetMetadata[] {
+    return this.lsp3Profile.avatar
+  }
+
+  get profileImage(): ImageMetadata[] {
+    return this.lsp3Profile.profileImage
+  }
+
+  get backgroundImage(): ImageMetadata[] {
+    return this.lsp3Profile.backgroundImage
+  }
+
+
   async load() {
     const erc725 = new ERC725(erc725schema, this.address, this.web3.currentProvider, config);
     const data = await erc725.fetchData('LSP3Profile') as any;
-    const profileData = data.value.LSP3Profile
-    this.name = profileData.name
-    this.description = profileData.description
-    this.links = profileData.links
-    this.backgroundImage = profileData.backgroundImage
-    this.profileImage = profileData.profileImage
-    this.tags = profileData.tags
+    this.lsp3Profile = data.value.LSP3Profile as LSP3Profile
+    // console.log(profileData)
+    // this.name = profileData.name
+    // this.description = profileData.description
+    // this.links = profileData.links
+    // this.backgroundImage = profileData.backgroundImage
+    // this.profileImage = profileData.profileImage
+    // this.tags = profileData.tags
 
   }
 
@@ -95,6 +130,17 @@ export class Profile {
       toString: () => `${name}#${tag}`,
     }
   }
+
+  // private async _getCurrentProfileUploaddData(): Promise<{ LSP3Profile: ProfileDataBeforeUpload }> {
+  //   return {
+  //     LSP3Profile: {
+  //       name: this.name,
+  //       description: this.description,
+  //       avatar: this.avatar,
+  //       backgroundImage: this.backgroundImage,
+  //     }
+  //   }
+  // }
 
   async generateUploadData(): Promise<{ LSP3Profile: ProfileDataBeforeUpload }> {
     return {
@@ -110,9 +156,42 @@ export class Profile {
     }
   }
 
-  async save() {
-    const data = await this.generateUploadData()
-    const uploadResult = await this.lspFactory.UniversalProfile.uploadProfileData(data.LSP3Profile);
+  async update(data: UpdateProfileData) {
+    const newProfileData: UpdateProfileData  = { ...this.lsp3Profile }
+
+    if (data.name) {
+      newProfileData.name = data.name
+    }
+
+    if (data.description) {
+      newProfileData.description = data.description
+    }
+
+    if (data.links) {
+      newProfileData.links = data.links
+    }
+
+    if (data.avatar) {
+      newProfileData.avatar = data.avatar
+    }
+
+    if (data.backgroundImage) {
+      newProfileData.backgroundImage = data.backgroundImage
+    }
+
+    if (data.profileImage) {
+      newProfileData.profileImage = data.profileImage
+    }
+
+    if (data.tags) {
+      newProfileData.tags = data.tags
+    }
+
+    const uploadData = {
+      LSP3Profile: newProfileData
+    }
+
+    const uploadResult = await this.lspFactory.UniversalProfile.uploadProfileData(uploadData.LSP3Profile);
     const lsp3ProfileIPFSUrl = uploadResult.url;
 
     const schema = [
@@ -135,7 +214,7 @@ export class Profile {
       value: {
         hashFunction: "keccak256(utf8)",
         // hash our LSP3 metadata JSON file
-        hash: this.web3.utils.keccak256(JSON.stringify(data)),
+        hash: this.web3.utils.keccak256(JSON.stringify(uploadData)),
         url: lsp3ProfileIPFSUrl,
       },
     });

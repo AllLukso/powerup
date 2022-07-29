@@ -1,16 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
-import { Profile } from '@strandgeek/powerup'
+import { Profile, UpdateProfileData } from '@strandgeek/powerup'
 import { useProfile } from "../hooks/useProfile";
 
 export interface ProfileFormProps {}
 
-interface FormData {
-  name?: string;
-  description?: string;
-}
-
 export const ProfileForm: FC<ProfileFormProps> = (props) => {
-  const [formData, setFormData] = useState<FormData | null>(null)
+  const [formData, setFormData] = useState<UpdateProfileData | null>(null)
   const profile = useProfile();
   useEffect(() => {
     if (profile) {
@@ -24,14 +19,12 @@ export const ProfileForm: FC<ProfileFormProps> = (props) => {
     if (!profile || !formData?.name || !formData.description) {
       return
     }
-    profile.name = formData.name
-    profile.description = formData.description
-    await profile.save()
+    await profile.update(formData)
   }
   if (!formData) {
     return null
   }
-  const onTextFieldChange = (field: string) => (e: any) => setFormData(pd => ({ ...pd, [field]: e.target.value }))
+  const onTextFieldChange = (field: string) => (e: any) => setFormData((pd: any) => ({ ...pd, [field]: e.target.value }))
   return (
     <div className="card w-96 bg-base-100 shadow-xl">
       <div className="card-body">
