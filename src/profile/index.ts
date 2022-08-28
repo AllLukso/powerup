@@ -183,11 +183,5 @@ export class Profile {
       .send({
         from: this.currentAccount,
       })
-      .on("receipt", (receipt) => {
-        console.log(receipt)
-      })  
-      .once("sending", (payload) => {
-        console.log(payload)
-      })
   }
 }
