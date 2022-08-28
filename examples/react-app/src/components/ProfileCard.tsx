@@ -1,11 +1,6 @@
 import { FC } from "react";
 import { useCurrentProfile } from "@strandgeek/react-powerup";
-
-const IPFS_GATEWAY = "https://2eff.lukso.dev/ipfs/";
-
-const ipfsUriToGatewayUrl = (uri: string): string => {
-  return uri.replace("ipfs://", IPFS_GATEWAY);
-};
+import { ipfsUriToGatewayUrl } from "../utils/ipfs";
 
 export const ProfileCard: FC<{ onEditClick: () => void }> = ({ onEditClick }) => {
   const profile = useCurrentProfile();
