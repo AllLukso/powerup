@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { Profile, UpdateProfileData } from '@strandgeek/powerup'
 import { useProfile } from "../hooks/useProfile";
+import { ImageMetadata } from "@lukso/lsp-factory.js";
 
 export interface ProfileFormProps {}
 
@@ -44,6 +45,21 @@ export const ProfileForm: FC<ProfileFormProps> = (props) => {
           <label className="label">
             <span className="label-text">Bio</span>
           </label>
+          <label>Image</label>
+          <input type="file" onChange={(e) => {
+            const { files } = e.target
+            if (!files) {
+              return
+            }
+            const file = files.length > 0 ? files[0]: null
+            if (!file) {
+              return
+            }
+            setFormData({
+              ...formData,
+              profileImage: file,
+            })
+          }}></input>
           <textarea
             className="textarea textarea-bordered"
             value={formData.description}

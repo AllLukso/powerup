@@ -1,55 +1,16 @@
 import ERC725, { ERC725JSONSchema } from "@erc725/erc725.js";
 import Web3 from "web3"
+import { AbiItem } from 'web3-utils';
+import { Contract } from 'web3-eth-contract'
 import { LinkMetdata, LSP3Profile, LSPFactory, ProfileDataBeforeUpload } from "@lukso/lsp-factory.js";
 import { AssetMetadata, ImageMetadata } from "@lukso/lsp-factory.js/build/main/src/lib/interfaces/metadata";
-const UniversalProfile = require('@lukso/lsp-smart-contracts/artifacts/UniversalProfile.json');
-const KeyManager = require("@lukso/lsp-smart-contracts/artifacts/LSP6KeyManager.json");
-
-
-
-
-// Consts
-const IPFS_GATEWAY = 'https://2eff.lukso.dev/ipfs/';
+import UniversalProfile from '@lukso/lsp-smart-contracts/artifacts/UniversalProfile.json';
 
 // Parameters for ERC725 Instance
-const erc725schema = require('@erc725/erc725.js/schemas/LSP3UniversalProfileMetadata.json');
-const config = { ipfsGateway: IPFS_GATEWAY };
+import erc725schema from '@erc725/erc725.js/schemas/LSP3UniversalProfileMetadata.json';
 
 export interface ProfileOptions {
-
-}
-
-interface ProfileLink {
-  title: string
-  url: string
-}
-
-interface ProfileAvatar {
-  title: string
-  url: string
-  hashFunction: string
-  hash: string
-  fileType: string
-}
-
-type Image = (ImageURL | ImageDigitalAsset)
-
-interface ImageURL {
-  width: number
-  height: number
-  hashFunction: string
-  hash: string
-  url: string
-}
-
-interface ImageDigitalAsset {
-  address: string
-  tokenId: string
-  width: number
-  height: number
-  hashFunction: string
-  hash: string
-  url: string
+  ipfsGateway: string
 }
 
 type ProfileHandle = {
@@ -69,13 +30,23 @@ export class Profile {
   private web3: Web3
   private lspFactory: LSPFactory
   private lsp3Profile: LSP3Profile
+  private currentAccount: string
 
   address: string
+  upContract: Contract;
+  ipfsGateway: string;
 
   constructor(opts: ProfileOptions) {
     this.address = opts.address
     this.web3 = opts.web3
     this.lspFactory = new LSPFactory(this.web3.currentProvider);
+    this.upContract = new this.web3.eth.Contract(UniversalProfile.abi as AbiItem[], this.address);
+    this.ipfsGateway = opts.ipfsGateway
+  }
+
+  private async getCurrentAccount(): Promise<string> {
+    const accounts = await this.web3.eth.getAccounts()
+    return accounts[0]
   }
 
   get name(): string {
@@ -106,19 +77,19 @@ export class Profile {
     return this.lsp3Profile.backgroundImage
   }
 
-
   async load() {
-    const erc725 = new ERC725(erc725schema, this.address, this.web3.currentProvider, config);
+    const { ipfsGateway } = this
+    const erc725 = new ERC725(
+      erc725schema as ERC725JSONSchema[],
+      this.address,
+      this.web3.currentProvider,
+      {
+        ipfsGateway,
+      }
+    );
     const data = await erc725.fetchData('LSP3Profile') as any;
     this.lsp3Profile = data.value.LSP3Profile as LSP3Profile
-    // console.log(profileData)
-    // this.name = profileData.name
-    // this.description = profileData.description
-    // this.links = profileData.links
-    // this.backgroundImage = profileData.backgroundImage
-    // this.profileImage = profileData.profileImage
-    // this.tags = profileData.tags
-
+    this.currentAccount = await this.getCurrentAccount()
   }
 
   get handle(): ProfileHandle {
@@ -130,17 +101,6 @@ export class Profile {
       toString: () => `${name}#${tag}`,
     }
   }
-
-  // private async _getCurrentProfileUploaddData(): Promise<{ LSP3Profile: ProfileDataBeforeUpload }> {
-  //   return {
-  //     LSP3Profile: {
-  //       name: this.name,
-  //       description: this.description,
-  //       avatar: this.avatar,
-  //       backgroundImage: this.backgroundImage,
-  //     }
-  //   }
-  // }
 
   async generateUploadData(): Promise<{ LSP3Profile: ProfileDataBeforeUpload }> {
     return {
@@ -157,7 +117,7 @@ export class Profile {
   }
 
   async update(data: UpdateProfileData) {
-    const newProfileData: UpdateProfileData  = { ...this.lsp3Profile }
+    const newProfileData: UpdateProfileData = { ...this.lsp3Profile }
 
     if (data.name) {
       newProfileData.name = data.name
@@ -205,30 +165,27 @@ export class Profile {
     ];
 
     const erc725 = new ERC725(schema, this.address, this.web3.currentProvider, {
-      ipfsGateway: "https://cloudflare-ipfs.com/ipfs/",
+      ipfsGateway: this.ipfsGateway,
     });
 
-    const encodedData = erc725.encodeData({
-      // TODO: Fix the type issue here
-      // @ts-ignore
+    const encodedData = erc725.encodeData([{
       keyName: "LSP3Profile",
       value: {
         hashFunction: "keccak256(utf8)",
-        // hash our LSP3 metadata JSON file
         hash: this.web3.utils.keccak256(JSON.stringify(uploadResult.json)),
         url: lsp3ProfileIPFSUrl,
       },
-    });
+    }]);
 
-    const universalProfileContract = new this.web3.eth.Contract(UniversalProfile.abi, this.address);
+    const universalProfileContract = new this.web3.eth.Contract(UniversalProfile.abi as AbiItem[], this.address);
     await universalProfileContract.methods
     ["setData(bytes32,bytes)"](encodedData.keys[0], encodedData.values[0])
       .send({
-        from: this.address,
+        from: this.currentAccount,
       })
       .on("receipt", (receipt) => {
         console.log(receipt)
-      })
+      })  
       .once("sending", (payload) => {
         console.log(payload)
       })
