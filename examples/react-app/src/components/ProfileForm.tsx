@@ -1,13 +1,14 @@
 import React, { FC, useEffect, useState } from "react";
-import { Profile, UpdateProfileData } from '@strandgeek/powerup'
-import { useProfile } from "../hooks/useProfile";
-import { ImageMetadata } from "@lukso/lsp-factory.js";
+// import { UpdateProfileData } from '@strandgeek/powerup'
+import { useCurrentProfile } from "@strandgeek/react-powerup";
 
-export interface ProfileFormProps {}
+export interface ProfileFormProps {
+  onCancelClick: () => void
+}
 
-export const ProfileForm: FC<ProfileFormProps> = (props) => {
-  const [formData, setFormData] = useState<UpdateProfileData | null>(null)
-  const profile = useProfile();
+export const ProfileForm: FC<ProfileFormProps> = ({ onCancelClick }) => {
+  const [formData, setFormData] = useState<any | null>(null)
+  const profile = useCurrentProfile();
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -67,7 +68,7 @@ export const ProfileForm: FC<ProfileFormProps> = (props) => {
           ></textarea>
         </div>
         <div className="card-actions justify-end mt-4">
-          <button className="btn btn-ghost">Cancel</button>
+          <button className="btn btn-ghost" onClick={onCancelClick}>Cancel</button>
           <button className="btn btn-primary" onClick={onSaveClick}>Save</button>
         </div>
       </div>

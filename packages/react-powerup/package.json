@@ -1,0 +1,47 @@
+{
+  "name": "@strandgeek/react-powerup",
+  "version": "0.0.1",
+  "description": "PowerUP is a javascript library that makes managing a LUKSO Universal Profile easy",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "test": "jest ./src",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strandgeek/powerup.git"
+  },
+  "keywords": [
+    "lukso",
+    "universalprofile",
+    "up",
+    "erc725",
+    "javascript",
+    "typescript"
+  ],
+  "author": "StrandGeek",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/strandgeek/powerup/issues"
+  },
+  "homepage": "https://github.com/strandgeek/powerup#readme",
+  "devDependencies": {
+    "@types/jest": "^28.1.8",
+    "@types/react": "^18.0.17",
+    "ts-jest": "^28.0.8",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@erc725/erc725.js": "^0.14.4",
+    "@lukso/lsp-factory.js": "^2.3.3",
+    "@strandgeek/powerup": "^0.0.1",
+    "@wagmi/core": "^0.5.4",
+    "react": "^18.2.0",
+    "wagmi": "^0.6.4",
+    "web3": "^1.7.4"
+  }
+}

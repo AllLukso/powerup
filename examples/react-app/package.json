@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {
     "@heroicons/react": "^1.0.6",
-    "@strandgeek/powerup": "file:../..",
+    "@strandgeek/powerup": "^0.0.1",
+    "@strandgeek/react-powerup": "file:../../packages/react-powerup",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -12,19 +13,13 @@
     "@types/node": "^16.11.45",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
-    "assert": "^2.0.0",
-    "crypto-browserify": "^3.12.0",
     "daisyui": "^2.20.0",
-    "https-browserify": "^1.0.0",
-    "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "stream-browserify": "^3.0.0",
-    "stream-http": "^3.2.0",
+    "react-spinners": "^0.13.4",
     "typescript": "^4.7.4",
-    "url": "^0.11.0",
     "wagmi": "^0.6.0",
     "web-vitals": "^2.1.4"
   },
@@ -53,9 +48,18 @@
     ]
   },
   "devDependencies": {
+    "assert": "^2.0.0",
     "autoprefixer": "^10.4.7",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
     "postcss": "^8.4.14",
+    "process": "^0.11.10",
     "react-app-rewired": "^2.2.1",
-    "tailwindcss": "^3.1.6"
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "tailwindcss": "^3.1.6",
+    "url": "^0.11.0"
   }
 }
