@@ -16,6 +16,7 @@
 
 --------
 
+
 ## About
 
 PowerUP is a library that empowers the use of LUKSO Universal Profiles for the development of dApps. PowerUP takes care of the entire ERC-725 serialization/deserialization process, abstracting all the steps that guarantee the LUKSO standard.
