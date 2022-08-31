@@ -1,4 +1,4 @@
-![GitHub](https://img.shields.io/github/license/strandgeek/powerup) ![GitHub issues](https://img.shields.io/github/issues/strandgeek/powerup) ![GitHub last commit](https://img.shields.io/github/last-commit/strandgeek/powerup)
+![GitHub](https://img.shields.io/github/license/strandgeek/powerup?v=1) ![GitHub issues](https://img.shields.io/github/issues/strandgeek/powerup) ![GitHub last commit](https://img.shields.io/github/last-commit/strandgeek/powerup)
 
 # PowerUP
 
