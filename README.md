@@ -2,6 +2,9 @@
 
 # PowerUP
 
+## Team
+StrandGeek (strandgeek@gmail.com)
+
 ## Quick Links
 - [📹 Video Presentation](https://www.youtube.com/watch?v=3N8zNU7-wvM)
 - [📕 Pitch Deck](https://drive.google.com/file/d/125elRSooWs5ichZ_PbPav3VbNJs8FoXX/view?usp=sharing)
