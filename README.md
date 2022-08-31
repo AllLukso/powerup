@@ -3,9 +3,9 @@
 # PowerUP
 
 ## Quick Links
-- [📹 Video Presentation](https://TODO)
-- [📕 Techinical Overview](https://TODO)
-- [📄 Smart Contract](https://TODO)
+- [📹 Video Presentation](https://www.youtube.com/watch?v=3N8zNU7-wvM)
+- [📕 Pitch Deck](https://drive.google.com/file/d/125elRSooWs5ichZ_PbPav3VbNJs8FoXX/view?usp=sharing)
+- [🛠 Integration Example](https://github.com/strandgeek/powerup/tree/main/examples/react-app)
 --------
 
 ## Table of Contents
